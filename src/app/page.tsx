@@ -73,6 +73,9 @@ export default function HomePage() {
 
 							stream.getTracks().map((track) => track.stop())
 
+							document.body.removeChild(video)
+							document.body.removeChild(canvas)
+
 							res()
 						})
 					})

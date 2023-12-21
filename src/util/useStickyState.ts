@@ -32,15 +32,16 @@ export default function useStickyState<S>(
 		}
 	}, [key, value])
 
-	useEffect(() => {
-		setValue(() => {
-			const stickyValue = window.localStorage.getItem(key)
+	// causing infinite loop
+	// useEffect(() => {
+	// 	setValue(() => {
+	// 		const stickyValue = window.localStorage.getItem(key)
 
-			return stickyValue !== null
-				? (JSON.parse(stickyValue) as S)
-				: defaultValue
-		})
-	}, [key, defaultValue])
+	// 		return stickyValue !== null
+	// 			? (JSON.parse(stickyValue) as S)
+	// 			: defaultValue
+	// 	})
+	// }, [key, defaultValue])
 
 	return [value, setValue]
 }
