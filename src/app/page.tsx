@@ -71,32 +71,34 @@ export default function HomePage() {
 
 		let photoTimeout: NodeJS.Timeout | undefined = undefined
 
+		const uploadPhoto = async () => {
+			const file = await takePhoto()
+
+			const response = await fetch("/upload", {
+				method: "POST",
+				body: file,
+			})
+
+			const json = await response.json()
+
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+			setAllPhotoURLs((photoURLs) => [
+				...photoURLs,
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				(json as PutBlobResult).url,
+			])
+		}
+
 		const setRecursivePhotoTimeout = () => {
 			photoTimeout = setTimeout(
 				() => {
-					void takePhoto().then(async (file) => {
-						const response = await fetch("/upload", {
-							method: "POST",
-							body: file,
-						})
-
-						const json = await response.json()
-
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-						setAllPhotoURLs((photoURLs) => [
-							...photoURLs,
-							// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-							(json as PutBlobResult).url,
-						])
-
-						setRecursivePhotoTimeout()
-					})
+					void uploadPhoto().then(setRecursivePhotoTimeout)
 				},
 				Math.random() * 1000 * 60 * 10,
 			)
 		}
 
-		setRecursivePhotoTimeout()
+		void uploadPhoto().then(setRecursivePhotoTimeout)
 
 		return () => {
 			clearTimeout(photoTimeout)
